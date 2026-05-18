@@ -1086,7 +1086,7 @@ function tryMove(dir){
     maze[py][px]=2;score+=2;
     document.getElementById('sc').textContent=score;
     // FREEZE all monsters for ~4 seconds (240 frames at 60fps)
-    frozen=true;frozenTimer=240;
+    frozen=true;frozenTimer=120;
     ghosts.forEach(g=>g.scared=true);
     spawnPop(px,py,'#FFD700');
     shakeTimer=6;
@@ -1137,7 +1137,7 @@ function checkCollision(){
         showDeathAt(px,py);
         shakeTimer=10;
         lives--;renderLives();
-        invincible=true; invTimer=150; // 2.5 sec immunity
+        invincible=true; invTimer=40; // ~0.6 sec immunity
         if(lives<=0){showGameOver();}else{showLifeLost();}
       }
     }
@@ -1181,7 +1181,7 @@ function showLifeLost(){
   else if(lives===1) warnMsg='last life!!';
   warnTimer=120;
   // Brief ghost freeze so player has a moment
-  frozen=true; frozenTimer=90;
+  frozen=true; frozenTimer=60;
 }
 function resumeAfterLife(){
   // no longer used for life lost — kept for compatibility
@@ -1381,6 +1381,15 @@ vg.addColorStop(1,`rgba(0,0,18,${.5+vp*.1})`);
 ctx.fillStyle=vg;ctx.fillRect(0,0,W,MH);
   drawMaze();
   if(scared){powerTimer--;if(powerTimer<=0){scared=false;ghosts.forEach(g=>g.scared=false);}if(powerTimer<60&&Math.floor(tick/6)%2===0)ghosts.forEach(g=>g.scared=!g.scared);}
+  // Frozen countdown — power bow freezes ghosts temporarily
+  if(frozen){
+    frozenTimer--;
+    if(frozenTimer<=0){
+      frozen=false;
+      scared=false;
+      ghosts.forEach(g=>{g.scared=false;});
+    }
+  }
   moveGhosts();checkCollision();
   ghosts.forEach(g=>{
     if(g.type==='boss')   drawBoss(g.x,g.y,g.scared,tick);
