@@ -1137,7 +1137,7 @@ function checkCollision(){
         showDeathAt(px,py);
         shakeTimer=10;
         lives--;renderLives();
-        invincible=true; invTimer=40; // ~0.6 sec immunity
+        invincible=true; invTimer=25; // ~0.4 sec immunity
         if(lives<=0){showGameOver();}else{showLifeLost();}
       }
     }
@@ -1181,7 +1181,7 @@ function showLifeLost(){
   else if(lives===1) warnMsg='last life!!';
   warnTimer=120;
   // Brief ghost freeze so player has a moment
-  frozen=true; frozenTimer=60;
+  frozen=true; frozenTimer=20;
 }
 function resumeAfterLife(){
   // no longer used for life lost — kept for compatibility
@@ -1362,8 +1362,7 @@ function gameLoop(){
   ctx.save();
   applyShake();
   ctx.fillStyle='#060810';ctx.fillRect(0,0,W,MH);
-  // Invincibility countdown
-  if(invincible){invTimer--;if(invTimer<=0)invincible=false;}
+
 // Subtle office floor grid lines
 ctx.fillStyle='rgba(20,30,50,.4)';
 for(let gx2=0;gx2<W;gx2+=TILE) ctx.fillRect(gx2,0,1,MH);
@@ -1390,6 +1389,8 @@ ctx.fillStyle=vg;ctx.fillRect(0,0,W,MH);
       ghosts.forEach(g=>{g.scared=false;});
     }
   }
+  // Invincibility ticks even during freeze so windows don't stack
+  if(invincible){invTimer--;if(invTimer<=0)invincible=false;}
   moveGhosts();checkCollision();
   ghosts.forEach(g=>{
     if(g.type==='boss')   drawBoss(g.x,g.y,g.scared,tick);
